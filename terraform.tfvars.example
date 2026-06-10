@@ -1,0 +1,40 @@
+# Copy this file to terraform.tfvars and fill in your values.
+# terraform.tfvars is gitignored. Never commit it.
+
+# Default authentication: read the named profile from ~/.oci/config.
+oci_auth_mode       = "profile"
+config_file_profile = "DEFAULT"
+
+# Alternative direct authentication:
+# oci_auth_mode   = "direct"
+# tenancy_ocid    = "ocid1.tenancy.oc1..xxxxxx"
+# user_ocid       = "ocid1.user.oc1..xxxxxx"
+# fingerprint     = "xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx"
+# private_key_path = "/absolute/path/to/oci_api_key.pem"
+
+region         = "ap-chuncheon-1"
+compartment_id = "ocid1.compartment.oc1..xxxxxx"
+ssh_public_key = "ssh-ed25519 AAAA..."
+
+project_name = "llm"
+ad_index = 0
+
+# Fixed to one maximum-size Always Free A1 server.
+server_ocpu      = 4
+server_memory_gb = 24
+boot_volume_size_gb = 200
+
+# Replace with your public IP in CIDR form.
+ssh_source_cidr = "203.0.113.10/32"
+
+# No service ports are public by default. Prefer SSH tunnels.
+ingress_rules = []
+
+# Example: expose an API only to your public IP.
+# ingress_rules = [
+#   {
+#     description = "LLM API"
+#     source      = "203.0.113.10/32"
+#     port        = 8000
+#   }
+# ]

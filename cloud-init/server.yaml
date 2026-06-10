@@ -1,0 +1,48 @@
+#cloud-config
+
+package_update: true
+package_upgrade: false
+
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg
+  - git
+  - ufw
+  - fail2ban
+
+write_files:
+  - path: /etc/ssh/sshd_config.d/99-llm-hardening.conf
+    permissions: "0644"
+    content: |
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      PermitRootLogin no
+      PubkeyAuthentication yes
+
+runcmd:
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow from ${ssh_cidr} to any port 22 proto tcp
+%{ for rule in ingress_rules ~}
+  - ufw allow from ${rule.source} to any port ${rule.port} proto tcp
+%{ endfor ~}
+  - ufw --force enable
+
+  - sshd -t
+  - systemctl restart ssh
+  - systemctl enable --now fail2ban
+
+  - install -m 0755 -d /etc/apt/keyrings
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  - chmod a+r /etc/apt/keyrings/docker.asc
+  - echo "deb [arch=arm64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu noble stable" > /etc/apt/sources.list.d/docker.list
+  - apt-get update -y
+  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker ubuntu
+
+  - mkdir -p /opt/llm/data
+  - chown -R ubuntu:ubuntu /opt/llm

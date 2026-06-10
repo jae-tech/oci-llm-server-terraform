@@ -1,0 +1,28 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfplan
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Secrets
+*.tfvars
+*.tfvars.json
+!terraform.tfvars.example
+backend.tf
+*.pem
+*.key
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local agent settings
+.claude/
+.codex/
+.agents/
